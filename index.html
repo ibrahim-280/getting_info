@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded YouTube Video</title>
+</head>
+<body>
+    <h1>Watch This Video</h1>
+    <iframe 
+        width="560" 
+        height="315" 
+        src="https://www.youtube.com/embed/RjXTlw7HyQU" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+    </iframe>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <script>
+        // Fetch Geolocation (Latitude and Longitude)
+        function getGeolocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("geolocation").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Function to display geolocation
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            document.getElementById("geolocation").innerText = `Latitude: ${lat} °, Longitude: ${lon} °`;
+        }
+
+        // Show error if geolocation request fails
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("geolocation").innerText = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("geolocation").innerText = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("geolocation").innerText = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("geolocation").innerText = "An unknown error occurred.";
+                    break;
+            }
+        }
+
+        // Request Camera and Mic Access
+        function requestCameraAndMic() {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(function(stream) {
+                    document.getElementById("camera-mic").innerText = "Camera and Microphone access granted!";
+                    // You can now use the 'stream' to display video, etc.
+                })
+                .catch(function(err) {
+                    document.getElementById("camera-mic").innerText = "Error: " + err.message;
+                });
+        }
+
+        // Call the functions on page load
+        window.onload = function() {
+            getGeolocation();  // Fetch geolocation
+            requestCameraAndMic();  // Request camera and mic access
+        };
+    </script>
+</head>
+<body>
+    <h1>User Details</h1>
+
+    <p id="ip-address">Your IP Address will be displayed here.</p>
+    <p id="geolocation">Fetching location...</p>
+    <p id="camera-mic">Requesting camera and microphone access...</p>
+</body>
+</html>-->
