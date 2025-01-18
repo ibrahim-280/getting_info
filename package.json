@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ibrahim-280/getting_info#readme",
   "dependencies": {
     "express": "^4.21.2",
+    "firebase-admin": "^13.0.2",
     "geoip-lite": "^1.4.10",
     "ua-parser-js": "^2.0.0"
   }
