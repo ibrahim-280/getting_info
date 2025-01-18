@@ -1,0 +1,25 @@
+{
+  "name": "project-phone-hacking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibrahim-280/getting_info.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ibrahim-280/getting_info/issues"
+  },
+  "homepage": "https://github.com/ibrahim-280/getting_info#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "geoip-lite": "^1.4.10",
+    "ua-parser-js": "^2.0.0"
+  }
+}
