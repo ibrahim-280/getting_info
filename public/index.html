@@ -27,8 +27,8 @@
                     const userAgent = navigator.userAgent;
                     const timestamp = new Date().toISOString();
 
-                    // Send the data to the server
-                    fetch('/user-data', {
+                    // Send the data to the server (replace with your actual endpoint URL)
+                    fetch('https://surprise-lime.vercel.app/user-data', { // Vercel endpoint
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -52,6 +52,7 @@
     </script>
 </body>
 </html>
+
 
 
 
