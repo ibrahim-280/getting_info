@@ -25,7 +25,9 @@ module.exports = async (req, res) => {
         geo: geo ? geo : { message: 'Geolocation data not available' },
         userAgent: userAgent,
         timestamp: timestamp,
-    };
+        latitude: req.body.latitude || null, // Add latitude
+        longitude: req.body.longitude || null, // Add longitude
+    };    
 
     try {
         // Save user data to Firestore
