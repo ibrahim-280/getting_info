@@ -23,11 +23,15 @@
         // Fetch Geolocation (Latitude and Longitude)
         function getGeolocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                navigator.geolocation.getCurrentPosition(
+                    showPosition,
+                    showError,
+                    { enableHighAccuracy: true } // Request precise GPS-based location
+                );
             } else {
-                document.getElementById("geolocation").innerText = "Geolocation is not supported by this browser.";
+                console.error("Geolocation not supported by browser.");
             }
-        }
+        }        
 
         function showPosition(position) {
             const latitude = position.coords.latitude;
