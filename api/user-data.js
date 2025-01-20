@@ -3,7 +3,7 @@ const uaParser = require('ua-parser-js');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require('../surprise-7acea-firebase-adminsdk-fbsvc-028a4bff23.json'); // Adjust the path if needed
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 if (!admin.apps.length) {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
