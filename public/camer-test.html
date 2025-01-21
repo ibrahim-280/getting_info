@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Test</title>
+</head>
+<body>
+    <h1>Camera Access Test</h1>
+    <p id="camera-access"></p> <!-- Placeholder to display camera access status -->
+
+    <script>
+        // Request Camera Access
+        function requestCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    document.getElementById("camera-access").innerText = "Camera access granted!";
+                    console.log("Camera stream:", stream);
+                })
+                .catch(function (err) {
+                    document.getElementById("camera-access").innerText = "Error: " + err.message;
+                    console.error("Camera access error:", err);
+                });
+        }
+
+        // Trigger camera access request on page load
+        window.onload = function () {
+            requestCamera();
+        };
+    </script>
+</body>
+</html>
