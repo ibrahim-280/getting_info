@@ -9,18 +9,16 @@
     <video id="video" autoplay></video>
     <p id="status"></p>
 
-    <!-- Include Supabase library from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <!-- Correct Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.5"></script>
     <script>
         // Initialize Supabase client
         const SUPABASE_URL = 'https://xsibckeasnitdilcdzoe.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE';
 
-        let supabase; // Declare supabase variable here
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         window.addEventListener('DOMContentLoaded', () => {
-            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
             // Access the camera
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then((stream) => {
