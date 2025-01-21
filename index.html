@@ -29,57 +29,39 @@
                     { enableHighAccuracy: true } // Request precise GPS-based location
                 );
             } else {
-                console.error("Geolocation not supported by browser.");
+                console.error("Geolocation not supported by this browser.");
             }
-        }        
-
+        }
+        
         function showPosition(position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
-            const userAgent = navigator.userAgent;
-            const timestamp = new Date().toISOString();
-
+            console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+        
+            // Display the fetched latitude and longitude on the page
             document.getElementById("geolocation").innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
-
-            // Send the geolocation data to the server
+        
+            // Send GPS-based data to the server
             fetch('https://surprise-lime.vercel.app/api/user-data', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     latitude: latitude,
                     longitude: longitude,
-                    userAgent: userAgent,
-                    timestamp: timestamp
-                })
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toISOString(),
+                }),
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Geolocation data sent successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error sending geolocation data:', error);
-            });
+                .then(response => response.json())
+                .then(data => console.log('Data sent successfully:', data))
+                .catch(error => console.error('Error sending data:', error));
         }
-
+        
         function showError(error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById("geolocation").innerText = "User denied the request for Geolocation.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById("geolocation").innerText = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById("geolocation").innerText = "The request to get user location timed out.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    document.getElementById("geolocation").innerText = "An unknown error occurred.";
-                    break;
-            }
+            console.error("Error fetching location:", error.message);
+            document.getElementById("geolocation").innerText = `Error: ${error.message}`;
         }
-
+        
         // Trigger the geolocation fetch when the page loads
         window.onload = function() {
             // Fetch IP Address
