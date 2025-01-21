@@ -10,37 +10,46 @@
     <p id="camera-status"></p>
     <video id="video" autoplay style="display: none;"></video>
     <canvas id="canvas" style="display: none;"></canvas>
-    <img id="captured-image" alt="Captured Photo" style="border: 2px solid #ccc; margin-top: 10px;" />
+    <div id="captured-images" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
 
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const capturedImage = document.getElementById('captured-image');
+        const capturedImages = document.getElementById('captured-images');
         const cameraStatus = document.getElementById('camera-status');
+        let photoCount = 0;
 
-        // Request access to the camera
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(function (stream) {
                 video.srcObject = stream;
                 video.style.display = 'block';
-                cameraStatus.innerText = "Camera access granted. Capturing photo...";
+                cameraStatus.innerText = "Camera access granted. Capturing photos...";
                 cameraStatus.style.color = "green";
 
-                // Wait for the video to start streaming
                 video.onloadedmetadata = function () {
-                    // Automatically capture the photo
-                    const context = canvas.getContext('2d');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const captureInterval = setInterval(() => {
+                        if (photoCount >= 10) {
+                            clearInterval(captureInterval);
+                            stream.getTracks().forEach(track => track.stop());
+                            return;
+                        }
 
-                    // Convert the captured image to a data URL and display it
-                    const imageDataUrl = canvas.toDataURL('image/png');
-                    capturedImage.src = imageDataUrl;
-                    capturedImage.style.display = 'block';
+                        const context = canvas.getContext('2d');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    // Stop the video stream after capturing
-                    stream.getTracks().forEach(track => track.stop());
+                        const imageDataUrl = canvas.toDataURL('image/png');
+                        const img = document.createElement('img');
+                        img.src = imageDataUrl;
+                        img.alt = `Photo ${photoCount + 1}`;
+                        img.style.border = "2px solid #ccc";
+                        img.style.width = "100px";
+                        img.style.height = "auto";
+                        capturedImages.appendChild(img);
+
+                        photoCount++;
+                    }, 1000); // Capture a photo every 1 second
                 };
             })
             .catch(function (err) {
