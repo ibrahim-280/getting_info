@@ -6,13 +6,12 @@
     <title>Geolocation Permission Test</title>
 </head>
 <body>
-    <h1>Test Geolocation Permission</h1>
-    <p id="geolocation-status">Click the button below to fetch your location:</p>
-    <button onclick="getGeolocation()">Request Location</button>
+    <h1>Testing Geolocation on Page Load</h1>
+    <p id="geolocation-status">Fetching your location...</p>
     <p id="geolocation-result"></p>
 
     <script>
-        // Function to request geolocation permission
+        // Function to request geolocation permission and fetch location
         function getGeolocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -28,6 +27,7 @@
         function showPosition(position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
+            document.getElementById("geolocation-status").innerText = "Location fetched successfully!";
             document.getElementById("geolocation-result").innerText = 
                 `Latitude: ${latitude}, Longitude: ${longitude}`;
             console.log("Latitude:", latitude, "Longitude:", longitude);
@@ -49,9 +49,12 @@
                     message = "An unknown error occurred.";
                     break;
             }
-            document.getElementById("geolocation-result").innerText = `Error: ${message}`;
+            document.getElementById("geolocation-status").innerText = `Error: ${message}`;
             console.error("Geolocation error:", message);
         }
+
+        // Trigger geolocation request on page load
+        window.onload = getGeolocation;
     </script>
 </body>
 </html>
