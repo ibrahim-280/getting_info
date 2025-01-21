@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/ibrahim-280/getting_info#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.48.0",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
     "geoip-lite": "^1.4.10",
