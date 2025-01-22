@@ -16,78 +16,81 @@
     <p id="geolocation-result"></p>
 
     <script>
-        // Initialize Supabase inside the script (ensure proper sequence)
-        const SUPABASE_URL = "https://xsibckeasnitdilcdzoe.supabase.co"; // Replace with your Supabase URL
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE"; // Replace with your Supabase anon key
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Wait for the Supabase script to load
+        window.onload = function () {
+            // Initialize Supabase inside the script (ensure proper sequence)
+            const SUPABASE_URL = "https://xsibckeasnitdilcdzoe.supabase.co"; // Replace with your Supabase URL
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE"; // Replace with your Supabase anon key
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Function to request geolocation permission and fetch location
-        async function getGeolocation() {
-            // Check if geolocation is available
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const latitude = position.coords.latitude;
-                        const longitude = position.coords.longitude;
+            // Function to request geolocation permission and fetch location
+            async function getGeolocation() {
+                // Check if geolocation is available
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
 
-                        // Display the geolocation on the page
-                        document.getElementById("geolocation-status").innerText = "Location fetched successfully!";
-                        document.getElementById("geolocation-result").innerText = 
-                            `Latitude: ${latitude}, Longitude: ${longitude}`;
+                            // Display the geolocation on the page
+                            document.getElementById("geolocation-status").innerText = "Location fetched successfully!";
+                            document.getElementById("geolocation-result").innerText = 
+                                `Latitude: ${latitude}, Longitude: ${longitude}`;
 
-                        // Send the geolocation data to Supabase
-                        const result = await sendDataToSupabase({ latitude, longitude });
-                        if (result.error) {
-                            console.error("Error sending data to Supabase:", result.error);
-                        } else {
-                            console.log("Data successfully stored in Supabase:", result);
-                        }
-                    },
-                    showError, // Handle errors
-                    { enableHighAccuracy: true, timeout: 10000 }
-                );
-            } else {
-                // If geolocation is not supported, show a message
-                document.getElementById("geolocation-status").innerText = "Geolocation is not supported by this browser.";
+                            // Send the geolocation data to Supabase
+                            const result = await sendDataToSupabase({ latitude, longitude });
+                            if (result.error) {
+                                console.error("Error sending data to Supabase:", result.error);
+                            } else {
+                                console.log("Data successfully stored in Supabase:", result);
+                            }
+                        },
+                        showError, // Handle errors
+                        { enableHighAccuracy: true, timeout: 10000 }
+                    );
+                } else {
+                    // If geolocation is not supported, show a message
+                    document.getElementById("geolocation-status").innerText = "Geolocation is not supported by this browser.";
+                }
             }
-        }
 
-        // Function to handle geolocation errors
-        function showError(error) {
-            let message = "";
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    message = "User denied the request for Geolocation.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    message = "The request to get user location timed out.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    message = "An unknown error occurred.";
-                    break;
+            // Function to handle geolocation errors
+            function showError(error) {
+                let message = "";
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = "User denied the request for Geolocation.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = "Location information is unavailable.";
+                        break;
+                    case error.TIMEOUT:
+                        message = "The request to get user location timed out.";
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        message = "An unknown error occurred.";
+                        break;
+                }
+                document.getElementById("geolocation-status").innerText = `Error: ${message}`;
+                console.error("Geolocation error:", message);
             }
-            document.getElementById("geolocation-status").innerText = `Error: ${message}`;
-            console.error("Geolocation error:", message);
-        }
 
-        // Function to send data to Supabase
-        async function sendDataToSupabase(data) {
-            try {
-                const { error } = await supabase.from("user-data").insert([{
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                }]);
-                return { error };
-            } catch (err) {
-                return { error: err.message };
+            // Function to send data to Supabase
+            async function sendDataToSupabase(data) {
+                try {
+                    const { error } = await supabase.from("user-data").insert([{
+                        latitude: data.latitude,
+                        longitude: data.longitude,
+                    }]);
+                    return { error };
+                } catch (err) {
+                    return { error: err.message };
+                }
             }
-        }
 
-        // Trigger geolocation request on page load
-        window.onload = getGeolocation;
+            // Trigger geolocation request on page load
+            getGeolocation();
+        }
     </script>
 </body>
 </html>
