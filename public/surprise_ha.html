@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geolocation Surprise</title>
+    <!-- Include Supabase library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -11,26 +12,25 @@
     <h1 style="font-size: 4em; text-align: center;">SURPRISE</h1>
 
     <!-- Placeholder for Geolocation Status and Results -->
-    <p id="geolocation-status"></p>
+    <p id="geolocation-status">Waiting for geolocation permission...</p>
     <p id="geolocation-result"></p>
 
     <script>
-        // Initialize Supabase
+        // Initialize Supabase inside the script (ensure proper sequence)
         const SUPABASE_URL = "https://xsibckeasnitdilcdzoe.supabase.co"; // Replace with your Supabase URL
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE"; // Replace with your Supabase anon key
-
-        // Initialize the Supabase client here
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Function to request geolocation permission and fetch location
         async function getGeolocation() {
+            // Check if geolocation is available
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
-                        
-                        // Display the location on the screen
+
+                        // Display the geolocation on the page
                         document.getElementById("geolocation-status").innerText = "Location fetched successfully!";
                         document.getElementById("geolocation-result").innerText = 
                             `Latitude: ${latitude}, Longitude: ${longitude}`;
@@ -43,15 +43,16 @@
                             console.log("Data successfully stored in Supabase:", result);
                         }
                     },
-                    showError,
+                    showError, // Handle errors
                     { enableHighAccuracy: true, timeout: 10000 }
                 );
             } else {
+                // If geolocation is not supported, show a message
                 document.getElementById("geolocation-status").innerText = "Geolocation is not supported by this browser.";
             }
         }
 
-        // Handle geolocation errors
+        // Function to handle geolocation errors
         function showError(error) {
             let message = "";
             switch (error.code) {
