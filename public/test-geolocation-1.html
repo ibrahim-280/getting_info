@@ -42,13 +42,13 @@
                         // Send data to Supabase
                         const result = await sendDataToSupabase({ ip, latitude, longitude, device });
                         if (result.error) {
-                            console.error("Error sending data to Supabase:", result.error);
+                            console.error("Error sending data to Supabase:", result.error.message);
                         } else {
                             console.log("Data successfully stored in Supabase:", result);
                         }
                     },
                     showError,
-                    { enableHighAccuracy: true }
+                    { enableHighAccuracy: true, timeout: 10000 }
                 );
             } else {
                 document.getElementById("geolocation-status").innerText = "Geolocation is not supported by this browser.";
